@@ -83,17 +83,6 @@ services:
         aliases:
           - ${SERVICE_NETWORK_NAME}-cassandra.${SERVICE_NETWORK_NAME}
 
-  cluster-redis:
-    image: grokzen/redis-cluster:latest
-    container_name: cluster-redis
-    environment:
-      - INITIAL_PORT=7000
-      - MASTERS=3 # Minimum 3 masters are required for clustered redis
-      - SLAVES_PER_MASTER=0
-    restart: on-failure
-    networks:
-      - ${NETWORK_NAME}
-
   redis:
     image: ${REDIS_IMAGE:-redis:6.2.6-alpine}
     volumes:
@@ -117,6 +106,17 @@ services:
       pongo-test-network:
         aliases:
           - ${SERVICE_NETWORK_NAME}-redis.${SERVICE_NETWORK_NAME}
+
+  cluster-redis:
+    image: grokzen/redis-cluster:latest
+    container_name: cluster-redis
+    environment:
+      - INITIAL_PORT=7000
+      - MASTERS=3 # Minimum 3 masters are required for clustered redis
+      - SLAVES_PER_MASTER=0
+    restart: on-failure
+    networks:
+      - ${NETWORK_NAME}
 
   squid:
     image: ${SQUID_IMAGE:-sameersbn/squid:3.5.27-2}
