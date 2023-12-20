@@ -630,7 +630,7 @@ jobs:
         - "2.8.x"
         - "3.5.x"
         - "dev"
-        - "3.5.0.x"
+        - "3.5.x.x"
         #- "dev-ee"    # Kong internal only, requires access to source code
 
     steps:
