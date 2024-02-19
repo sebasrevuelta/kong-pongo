@@ -22,7 +22,56 @@
 
 ---
 
-## unreleased
+## 2.10.0 released 08-Feb-2024
+
+* Feat: add automatic reloads for interactive shells. This will watch plugin files as
+  well as the dbless config file and reload upon changes.
+  [#504](https://github.com/Kong/kong-pongo/pull/504).
+
+* Feat: support access to host runner's services.
+  [#473](https://github.com/Kong/kong-pongo/pull/473).
+
+* Feat: provide more feedback when using a custom image.
+  [#524](https://github.com/Kong/kong-pongo/pull/524).
+
+* Feat: Kong Enterprise 3.5.0.3
+
+* Feat: Kong Enterprise 3.5.0.2
+
+* Feat: Kong Enterprise 3.5.0.1
+
+* Feat: Kong Enterprise 3.4.3.3
+
+* Feat: Kong Enterprise 3.4.3.2
+
+* Feat: Kong Enterprise 3.4.3.1
+
+* Feat: Kong Enterprise 3.4.2.0
+
+* Feat: Kong Enterprise 2.8.4.6
+
+* Feat: Kong Enterprise 2.8.4.5
+
+* Fix: include the Pongo version in the generated image names to prevent running
+  older images after a Pongo upgrade. A new image will automatically be build now.
+  [#516](https://github.com/Kong/kong-pongo/pull/516).
+
+* Fix: fail if the compose-up command fails. To prevent hanging while waiting for a
+  health-check to go healthy.
+  [#522](https://github.com/Kong/kong-pongo/pull/522).
+
+* Fix: do not fail the build if httpie cannot be installed. Now continues the
+  build since it is optional.
+  [#515](https://github.com/Kong/kong-pongo/pull/515).
+
+* Fix: the --debug option will now output full buildlogs again using buildkit
+  [#513](https://github.com/Kong/kong-pongo/pull/513).
+
+* Fix: kms alias will exit when starting Kong fails.
+  [#503](https://github.com/Kong/kong-pongo/pull/503).
+
+* Fix: proxy config will be passed upon build and again on run.
+  [#514](https://github.com/Kong/kong-pongo/pull/514).
 
 * Fix: health-checks on Pongo container. Use proper prefix.
   [#456](https://github.com/Kong/kong-pongo/pull/456).
@@ -31,11 +80,11 @@
   them both. So 3.4.1.x now resolves to latest within 3.4, being 3.4.2.0.
   [#477](https://github.com/Kong/kong-pongo/pull/477).
 
-* Feat: support access to host runner's services.
-  [#473](https://github.com/Kong/kong-pongo/pull/473).
-
 * Chore: remove deprecated docker repo.
   [#475](https://github.com/Kong/kong-pongo/pull/475).
+
+* Chore: remove some deadcode and remnants of Pulp usage.
+  [#523](https://github.com/Kong/kong-pongo/pull/523).
 
 ---
 

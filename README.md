@@ -3,10 +3,6 @@
 [![Lint](https://github.com/Kong/kong-pongo/workflows/Lint/badge.svg)](https://github.com/Kong/kong-pongo/actions/workflows/lint.yml)
 [![SemVer](https://img.shields.io/github/v/tag/Kong/kong-pongo?color=brightgreen&label=SemVer&logo=semver&sort=semver)](CHANGELOG.md)
 
-| :exclamation:  Important compatibility notes |
-|:---------------------------|
-| Pongo has been switched from non-versioned to versioned on 17-Mar-2022. On 20-Oct-2022 version 2.0.0 was pushed to `master` and released. This means that breaking changes were introduced on `master`. If you experience failures, then either pin your Pongo version to 1.x or [upgrade](#upgrading) |
-
 # pongo
 
 Pongo provides a simple way of testing Kong plugins. For a complete walkthrough
@@ -22,7 +18,7 @@ check [this blogpost on the Kong website](https://konghq.com/blog/custom-lua-plu
   | | | (_) | | | | (_| | (_) |
   \_|  \___/|_| |_|\__, |\___/
                     __/ |
-                   |___/  v2.9.0
+                   |___/  v2.10.0
 
 Usage: pongo action [options...] [--] [action options...]
 
@@ -143,6 +139,10 @@ git clone https://github.com/Kong/kong-pongo.git
 mkdir -p ~/.local/bin
 ln -s $(realpath kong-pongo/pongo.sh) ~/.local/bin/pongo
 ```
+### Proxies
+
+When Pongo builds images, it might fail when it is behind proxies and cannot verify the certificates. See [configuration](#configuration)
+on how to disable verification.
 
 ## Update
 
@@ -165,12 +165,13 @@ Several environment variables are available for configuration:
   Enterprise features.
 * Specify a custom image; set the image name/tag in `KONG_IMAGE` and make sure
   the image is locally available
+* When the variable `PONGO_INSECURE` is set to anything else than `'false'`, it
+  will configure curl and git (during the build) to switch off ssl verification.
+  Please ensure you understand the security consequences when using this option!
+  See also `pongo build --help`.
 
 For Kong-internal use there are some additional variables:
 
-* `PULP_USERNAME` and `PULP_PASSWORD` to automatically download the Kong
-  Enterprise CI license. See [Setting up CI](#setting-up-ci) for some Pulp
-  environment variable examples.
 * `GITHUB_TOKEN` the Github token to get access to the Kong Enterprise source
   code. This is only required for development builds, not for released
   versions of Kong.
