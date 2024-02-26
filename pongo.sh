@@ -25,8 +25,7 @@ function globals {
 
   DOCKER_FILE=${PONGO_DOCKER_FILE:-$LOCAL_PATH/assets/Dockerfile}
   DOCKER_COMPOSE_FILES="-f ${LOCAL_PATH}/assets/docker-compose.yml"
-  IMAGE_BASE_PREFIX="kong-pongo-"
-  IMAGE_BASE_NAME=$IMAGE_BASE_PREFIX$PONGO_VERSION
+  IMAGE_BASE_NAME=kong-pongo-test
 
   # the path where the plugin source is located, as seen from Pongo (this script)
   KONG_TEST_PLUGIN_PATH=$(realpath .)
@@ -442,7 +441,21 @@ function check_secret_availability {
 }
 
 function docker_login {
-  echo "$DOCKER_PASSWORD" | docker login c.rzp.io -u "$DOCKER_USERNAME" --password-stdin
+
+  # Login to the first registry
+    echo "$HARBOR_DOCKER_PASSWORD" | docker login c.rzp.io -u "$HARBOR_DOCKER_USERNAME" --password-stdin
+    if [[ ! $? -eq 0 ]]; then
+      docker logout
+      err "Docker login failed for the c.rzp.io. Make sure to provide the proper credentials in the \$DOCKER_USERNAME
+  and \$DOCKER_PASSWORD environment variables."
+    fi
+
+  if [[ -z $DOCKER_PASSWORD ]] && [[ -z $DOCKER_USERNAME ]]; then
+    # No credentials, nothing to log into
+    return 0
+  fi
+
+  echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   if [[ ! $? -eq 0 ]]; then
     docker logout
     err "Docker login failed. Make sure to provide the proper credentials in the \$DOCKER_USERNAME
@@ -1042,7 +1055,6 @@ function main {
     if [[ "${EXTRA_ARGS[1]}" == "--force" ]]; then
       FORCE_BUILD=true
     fi
-    docker_login
     build_image
     ;;
 
@@ -1083,7 +1095,6 @@ function main {
 
   run)
     ensure_available
-    docker_login
     get_version
 
     docker inspect --type=image "$KONG_TEST_IMAGE" &> /dev/null
@@ -1148,7 +1159,6 @@ function main {
 
   shell)
     get_plugin_names
-    docker_login
     get_version
     docker inspect --type=image "$KONG_TEST_IMAGE" &> /dev/null
     if [[ ! $? -eq 0 ]]; then
@@ -1231,7 +1241,6 @@ function main {
 
   lint)
     get_plugin_names
-    docker_login
     get_version
     docker inspect --type=image "$KONG_TEST_IMAGE" &> /dev/null
     if [[ ! $? -eq 0 ]]; then
@@ -1329,7 +1338,6 @@ function main {
     if [ ! -d "$tdir$subd" ]; then
       # temp dev-docs dir does not exist, go render the docs
       get_plugin_names
-      docker_login
       get_version
       docker inspect --type=image "$KONG_TEST_IMAGE" &> /dev/null
       if [[ ! $? -eq 0 ]]; then
