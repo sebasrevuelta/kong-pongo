@@ -1,5 +1,5 @@
-ARG BASE=ubuntu:latest
-FROM ${BASE}
+ARG DOCKER_REPO
+FROM ${DOCKER_REPO}:3.6.0-ubuntu
 
 ARG PONGO_VERSION=master
 
