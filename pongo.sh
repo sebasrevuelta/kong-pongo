@@ -1088,6 +1088,7 @@ function main {
 
   run)
     ensure_available
+    docker_login
     get_version
 
     docker inspect --type=image "$KONG_TEST_IMAGE" &> /dev/null
@@ -1152,6 +1153,7 @@ function main {
 
   shell)
     get_plugin_names
+    docker_login
     get_version
     docker inspect --type=image "$KONG_TEST_IMAGE" &> /dev/null
     if [[ ! $? -eq 0 ]]; then
@@ -1234,6 +1236,7 @@ function main {
 
   lint)
     get_plugin_names
+    docker_login
     get_version
     docker inspect --type=image "$KONG_TEST_IMAGE" &> /dev/null
     if [[ ! $? -eq 0 ]]; then
@@ -1254,6 +1257,7 @@ function main {
 
   pack)
     get_plugin_names
+    docker_login
     get_version
     docker inspect --type=image "$KONG_TEST_IMAGE" &> /dev/null
     if [[ ! $? -eq 0 ]]; then
@@ -1330,6 +1334,7 @@ function main {
     if [ ! -d "$tdir$subd" ]; then
       # temp dev-docs dir does not exist, go render the docs
       get_plugin_names
+      docker_login
       get_version
       docker inspect --type=image "$KONG_TEST_IMAGE" &> /dev/null
       if [[ ! $? -eq 0 ]]; then
