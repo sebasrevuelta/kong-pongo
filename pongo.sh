@@ -442,11 +442,6 @@ function check_secret_availability {
 }
 
 function docker_login {
-  if [[ -z $DOCKER_PASSWORD ]] && [[ -z $DOCKER_USERNAME ]]; then
-    # No credentials, nothing to log into
-    return 0
-  fi
-
   echo "$DOCKER_PASSWORD" | docker login c.rzp.io -u "$DOCKER_USERNAME" --password-stdin
   if [[ ! $? -eq 0 ]]; then
     docker logout
