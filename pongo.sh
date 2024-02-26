@@ -441,15 +441,6 @@ function check_secret_availability {
 }
 
 function docker_login {
-
-  # Login to the first registry
-    echo "$HARBOR_DOCKER_PASSWORD" | docker login c.rzp.io -u "$HARBOR_DOCKER_USERNAME" --password-stdin
-    if [[ ! $? -eq 0 ]]; then
-      docker logout
-      err "Docker login failed for the c.rzp.io. Make sure to provide the proper credentials in the \$DOCKER_USERNAME
-  and \$DOCKER_PASSWORD environment variables."
-    fi
-
   if [[ -z $DOCKER_PASSWORD ]] && [[ -z $DOCKER_USERNAME ]]; then
     # No credentials, nothing to log into
     return 0
@@ -508,7 +499,7 @@ function get_image {
 
     docker inspect --type=image "$image" &> /dev/null
     if [[ ! $? -eq 0 ]]; then
-      docker pull "$image"
+      docker pull "proxy_dockerhub/library/kong/$image"
       if [[ ! $? -eq 0 ]]; then
         # failed to pull CE image, so try the fallback
         # NOTE: new releases take a while (days) to become available in the
