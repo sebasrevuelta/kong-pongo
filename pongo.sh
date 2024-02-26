@@ -447,7 +447,7 @@ function docker_login {
     return 0
   fi
 
-  echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  echo "$DOCKER_PASSWORD" | docker login c.rzp.io -u "$DOCKER_USERNAME" --password-stdin
   if [[ ! $? -eq 0 ]]; then
     docker logout
     err "Docker login failed. Make sure to provide the proper credentials in the \$DOCKER_USERNAME
