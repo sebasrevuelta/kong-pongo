@@ -1047,6 +1047,7 @@ function main {
     if [[ "${EXTRA_ARGS[1]}" == "--force" ]]; then
       FORCE_BUILD=true
     fi
+    docker_login
     build_image
     ;;
 
