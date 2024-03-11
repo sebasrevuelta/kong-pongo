@@ -1,4 +1,4 @@
-ARG BASE=ubuntu:latest
+ARG BASE=3.6.0-ubuntu
 FROM ${BASE}
 
 ARG PONGO_VERSION=master
