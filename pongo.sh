@@ -114,7 +114,7 @@ function globals {
   # KONG_EE_PRIVATE_TAG_POSTFIX="-ubuntu"
 
   # regular Kong CE images repo (tag is build as $PREFIX$VERSION$POSTFIX)
-  KONG_OSS_TAG_PREFIX="harbor.razorpay.com/proxy_dockerhub/library/kong:"
+  KONG_OSS_TAG_PREFIX="c.rzp.io/proxy_dockerhub/library/kong:"
   KONG_OSS_TAG_POSTFIX="-ubuntu"
 
   # unoffical Kong CE images repo, the fallback
