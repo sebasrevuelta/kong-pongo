@@ -75,15 +75,27 @@ function globals {
 
   unset WINDOWS_SLASH
   unset WINPTY_PREFIX
-  local platform
-  platform=$(uname -s)
-  if [ "${platform:0:5}" == "MINGW" ]; then
-    # Windows requires an extra / in docker command so //bin/bash
+  unset PONGO_PLATFORM
+  if [ "$(uname -s)" == "Darwin" ]; then
+    # all Apple platforms
+    export PONGO_PLATFORM="APPLE"
+  elif uname -s | grep -q "MINGW"; then
+    # Git Bash for Windows
+    # Msys (not supported!)
+    export PONGO_PLATFORM="WINDOWS"
+    # Windows/MinGW requires an extra / in docker command so //bin/bash
     # https://www.reddit.com/r/docker/comments/734arg/cant_figure_out_how_to_bash_into_docker_container/
     WINDOWS_SLASH="/"
-    # for terminal output we passthrough winpty
-    WINPTY_PREFIX=winpty
-  fi;
+    if winpty --help > /dev/null; then
+      # for terminal output we passthrough winpty
+      WINPTY_PREFIX="winpty"
+    fi
+  elif grep -q WSL < /proc/version; then
+    # WSL and WSL2
+    export PONGO_PLATFORM="WINDOWS"
+  else
+    export PONGO_PLATFORM="LINUX"
+  fi
 
   # when running CI do we have the required secrets available? (used for EE only)
   # secrets are unavailable for PR's from outside the organization (untrusted)
@@ -102,11 +114,11 @@ function globals {
   # KONG_EE_PRIVATE_TAG_POSTFIX="-ubuntu"
 
   # regular Kong CE images repo (tag is build as $PREFIX$VERSION$POSTFIX)
-  KONG_OSS_TAG_PREFIX="kong:"
+  KONG_OSS_TAG_PREFIX="proxy_dockerhub/library/kong:"
   KONG_OSS_TAG_POSTFIX="-ubuntu"
 
   # unoffical Kong CE images repo, the fallback
-  KONG_OSS_UNOFFICIAL_TAG_PREFIX="kong:"
+  KONG_OSS_UNOFFICIAL_TAG_PREFIX="kong/kong:"
   KONG_OSS_UNOFFICIAL_TAG_POSTFIX="-ubuntu"
 
   # development EE images repo, these are public, no credentials needed
@@ -697,15 +709,16 @@ function build_image {
   fi
 
   msg "starting build of image '$KONG_TEST_IMAGE'"
-  local progress_type
-  if [[ "$PONGO_DEBUG" == "true" ]] ; then
-    progress_type=plain
-  else
-    progress_type=auto
-  fi
+  # local progress_type
+  # if [[ "$PONGO_DEBUG" == "true" ]] ; then
+  #   progress_type=plain
+  # else
+  #   progress_type=auto
+  # fi
+  # The following line caused issues on newer Docker releases, so we're disabling it for now
+  # --progress $progress_type \
   $WINPTY_PREFIX docker build \
     -f "$DOCKER_FILE" \
-    --progress $progress_type \
     --build-arg PONGO_VERSION="$PONGO_VERSION" \
     --build-arg http_proxy="$http_proxy" \
     --build-arg https_proxy="$https_proxy" \
@@ -785,10 +798,10 @@ function pongo_down {
 function pongo_clean {
   pongo_down --all
 
-  docker images --filter=reference="${IMAGE_BASE_NAME}:*" --format "found: {{.ID}}" | grep found
+  docker images --filter=reference="${IMAGE_BASE_PREFIX}*:*" --format "found: {{.ID}}" | grep found
   if [[ $? -eq 0 ]]; then
     # shellcheck disable=SC2046  # we want the image ids to be word-splitted
-    docker rmi $(docker images --filter=reference="${IMAGE_BASE_NAME}:*" --format "{{.ID}}")
+    docker rmi $(docker images --filter=reference="${IMAGE_BASE_PREFIX}*:*" --format "{{.ID}}")
   fi
 
   docker images --filter=reference="pongo-expose:*" --format "found: {{.ID}}" | grep found
@@ -879,7 +892,7 @@ function pongo_status {
       images)
         echo Pongo cached images:
         echo ====================
-        docker images "${IMAGE_BASE_NAME}"
+        docker images --filter=reference="${IMAGE_BASE_PREFIX}*:*"
         ;;
 
       versions)
